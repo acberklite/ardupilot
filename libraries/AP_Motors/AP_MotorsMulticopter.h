@@ -93,6 +93,8 @@ public:
     // as vectoring is used for yaw control
     virtual void        disable_yaw_torque(void) {}
 
+    virtual void        enable_yaw_torque(void) {}
+
     // return whether a motor is enabled or not
     bool                is_motor_enabled(uint8_t i) override { return motor_enabled[i]; }
 

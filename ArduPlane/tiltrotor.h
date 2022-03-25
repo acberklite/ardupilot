@@ -90,7 +90,8 @@ public:
     enum {TILT_TYPE_CONTINUOUS    =0,
           TILT_TYPE_BINARY        =1,
           TILT_TYPE_VECTORED_YAW  =2,
-          TILT_TYPE_BICOPTER      =3
+          TILT_TYPE_BICOPTER      =3,
+          TILT_TYPE_VECTORED_PITCH  =4,
     };
 
     static const struct AP_Param::GroupInfo var_info[];

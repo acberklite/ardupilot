@@ -1290,5 +1290,14 @@ void AP_MotorsMatrix::disable_yaw_torque(void)
     }
 }
 
+/*
+  enable the use of motor torque to control yaw.
+*/
+
+void AP_MotorsMatrix::enable_yaw_torque(void)
+{
+    _yaw_factor[AP_MOTORS_MAX_NUM_MOTORS];;
+}
+
 // singleton instance
 AP_MotorsMatrix *AP_MotorsMatrix::_singleton;
