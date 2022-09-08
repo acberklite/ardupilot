@@ -105,7 +105,7 @@ void Tiltrotor::setup()
         return;
     }
 
-    _is_vectored = tilt_mask != 0 && type == TILT_TYPE_VECTORED_YAW or type == TILT_TYPE_VECTORED_PITCH;
+    _is_vectored = tilt_mask != 0 && type == TILT_TYPE_VECTORED_YAW;
 
     // true if a fixed forward motor is configured, either throttle, throttle left  or throttle right.
     // bicopter tiltrotors use throttle left and right as tilting motors, so they don't count in that case.
@@ -192,6 +192,8 @@ void Tiltrotor::slew(float newtilt)
 
     // translate to 0..1000 range and output
     SRV_Channels::set_output_scaled(SRV_Channel::k_motor_tilt, 1000 * current_tilt);
+    SRV_Channels::set_range(SRV_Channel::k_tiltMotorRear,  1000 * current_tilt);
+    SRV_Channels::set_range(SRV_Channel::k_tiltMotorFront,  1000 * current_tilt);
 }
 
 // return the current tilt value that represens forward flight
@@ -309,6 +311,9 @@ void Tiltrotor::continuous_update(void)
         // relies heavily on Q_VFWD_GAIN being set appropriately.
        float settilt = constrain_float((SRV_Channels::get_output_scaled(SRV_Channel::k_throttle)-MAX(plane.aparm.throttle_min.get(),0)) / 50.0f, 0, 1);
        slew(MIN(settilt * max_angle_deg / 90.0f, get_forward_flight_tilt()));
+    }
+    if (type == TILT_TYPE_VECTORED_PITCH) {
+        slew(plane.channel_pitch->get_control_in)
     }
 }
 
@@ -584,24 +589,6 @@ void Tiltrotor::vectoring(void)
             SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorRearRight, 1000 * constrain_float(base_output - tilt_offset * yaw_range,0,1));
         }
         //Alec's additions
-
-        
-        if (TILT_TYPE_VECTORED_PITCH) {
-            if (current_tilt <= 0) {
-                motors->enable_yaw_torque();
-                // the motors are not tilted, no compensation needed
-                return;
-            } else {
-                motors->disable_yaw_torque();
-                const float tilt_offset = constrain_float(pitch_out * sin_tilt + avg_roll_factor * roll_out * sin_tilt, -1, 1);
-                SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorLeft,  1000 * constrain_float(base_output + tilt_offset * yaw_range,0,1));
-                SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorRight, 1000 * constrain_float(base_output - tilt_offset * yaw_range,0,1));
-                SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorRear,  1000 * constrain_float(base_output + tilt_offset,0,1));
-                SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorFront,  1000 * constrain_float(base_output + tilt_offset,0,1));
-                SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorRearLeft,  1000 * constrain_float(base_output + tilt_offset * yaw_range,0,1));
-                SRV_Channels::set_output_scaled(SRV_Channel::k_tiltMotorRearRight, 1000 * constrain_float(base_output - tilt_offset * yaw_range,0,1));
-            }
-        }
 
     }
 }

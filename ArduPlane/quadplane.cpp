@@ -1007,6 +1007,9 @@ void QuadPlane::get_pilot_desired_lean_angles(float &roll_out_cd, float &pitch_o
 
     // scale roll and pitch inputs to ANGLE_MAX parameter range
     float scaler = angle_max_cd/4500.0;
+    if (Tiltrotor::Type == 4) {
+        pitch_out_cd = 0;
+    }
     roll_out_cd *= scaler;
     pitch_out_cd *= scaler;
 
